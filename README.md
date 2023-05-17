@@ -24,7 +24,7 @@ MetalLB aims to redress this imbalance by offering a network load balancer imple
 
 Encountered issue when installed by manifest: failed calling webhook "ipaddresspoolvalidationwebhook.metallb.io"
 
-After googled around, it was able to install by helm (Please note that it was installed in the default namespace so the IP configuration yaml files were also modified to use default namespace) and then configured to enable kong-proxy as loadbalancer service to get the IP (from pending status).
+After googled around, it was able to install by helm (Please note that it was installed in the default namespace so the IP configuration yaml files were also modified to use default namespace) and then configured to enable kong-proxy as loadbalancer service to get the EXTERNAL-IP (from pending status).
 
     helm repo add metallb https://metallb.github.io/metallb
     helm install metallb metallb/metallb --set crds.validationFailurePolicy=Ignore
