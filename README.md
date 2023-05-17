@@ -51,3 +51,5 @@ After googled around, it was able to install by helm (Please note that it was in
 (6). https://metallb.universe.tf/
 
 (7). https://github.com/metallb/metallb/issues/1697
+
+(8). https://www.cnblogs.com/netsa/p/17178218.html
