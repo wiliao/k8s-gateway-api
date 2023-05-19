@@ -5,7 +5,17 @@ Install a Gateway controller OR install the Gateway API CRDs manually. As an exa
 
 ## 1. Installing an Ingress and Gateway APIs controller
 
-Chose Kong Kubernetes Ingress Controller (KIC) which supports Gateway API. 
+Chose Kong Kubernetes Ingress Controller (KIC) which supports Gateway API. Install Kong via the official Helm chart:
+
+    helm repo add kong https://charts.konghq.com
+    helm repo update
+
+
+    # Helm 3
+    helm install kong/kong --generate-name --set ingressController.installCRDs=false -n kong --create-namespace
+
+    HOST=$(kubectl get svc --namespace kong kong-1684110974-kong-proxy -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+    PORT=$(kubectl get svc --namespace kong kong-1684110974-kong-proxy -o jsonpath='{.spec.port[0].port}')
 
 ![screen-shot-overview](screen-shot/install-kic-by-helm.png)
 
@@ -19,8 +29,8 @@ Bare-metal cluster operators are left with two lesser tools to bring user traffi
 
 MetalLB aims to redress this imbalance by offering a network load balancer implementation that integrates with standard network equipment, so that external services on bare-metal clusters also “just work” as much as possible.
 
-    sudo ufw allow 7946/TCP
-    sudo ufw allow 7946/UDP
+    sudo ufw allow 7946/tcp
+    sudo ufw allow 7946/udp
 
 Encountered issue when installed by manifest: failed calling webhook "ipaddresspoolvalidationwebhook.metallb.io"
 
