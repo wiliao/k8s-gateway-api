@@ -3,34 +3,7 @@ Setup k8s gateway api on the vanilla cluster
 
 Install a Gateway controller OR install the Gateway API CRDs manually. As an example, I tried installing controller here.
 
-## 1. Installing an Ingress and Gateway APIs controller
-
-Chose Kong Kubernetes Ingress Controller (KIC) which supports Gateway API. Install Kong via the official Helm chart:
-
-    helm repo add kong https://charts.konghq.com
-    helm repo update
-
-
-    # Helm 3
-    helm install kong/kong --generate-name --set ingressController.installCRDs=false -n kong --create-namespace
-
-    HOST=$(kubectl get svc --namespace kong kong-1684617151-kong-proxy -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-    PORT=$(kubectl get svc --namespace kong kong-1684617151-kong-proxy -o jsonpath='{.spec.ports[0].port}')
-    export PROXY_IP=${HOST}:${PORT}
-    curl $PROXY_IP
-
-
-![screen-shot-overview](screen-shot/install-kic-by-helm.png)
-
-After install MetalLB, run these commands to test:
-
-    HOST=$(kubectl get svc --namespace kong kong-1684593385-kong-proxy -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-    PORT=$(kubectl get svc --namespace kong kong-1684593385-kong-proxy -o jsonpath='{.spec.ports[0].port}')
-    export PROXY_IP=${HOST}:${PORT}
-    curl $PROXY_IP
-
-
-## 2. Installing MetalLB
+## 1. Installing MetalLB
 
 Kubernetes does not offer an implementation of network load balancers (Services of type LoadBalancer) for bare-metal clusters. The implementations of network load balancers that Kubernetes does ship with are all glue code that calls out to various IaaS platforms (GCP, AWS, Azure…). If you’re not running on a supported IaaS platform (GCP, AWS, Azure…), LoadBalancers will remain in the “pending” state indefinitely when created.
 
@@ -61,6 +34,37 @@ Both service "test-metallb" and kong-proxy got IPs from the specified pool:
 Delete metallb:
 
     helm delete metallb
+
+## 2. Installing an Ingress and Gateway APIs controller
+
+Chose Kong Kubernetes Ingress Controller (KIC) which supports Gateway API. Install Kong via the official Helm chart:
+
+    helm repo add kong https://charts.konghq.com
+    helm repo update
+
+
+    # Helm 3
+    helm install kong/kong --generate-name --set ingressController.installCRDs=false -n kong --create-namespace
+
+    HOST=$(kubectl get svc --namespace kong kong-1684617151-kong-proxy -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+    PORT=$(kubectl get svc --namespace kong kong-1684617151-kong-proxy -o jsonpath='{.spec.ports[0].port}')
+    export PROXY_IP=${HOST}:${PORT}
+    curl $PROXY_IP
+
+
+![screen-shot-overview](screen-shot/install-kic-by-helm.png)
+
+After install MetalLB, run these commands to test:
+
+    HOST=$(kubectl get svc --namespace kong kong-1684593385-kong-proxy -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+    PORT=$(kubectl get svc --namespace kong kong-1684593385-kong-proxy -o jsonpath='{.spec.ports[0].port}')
+    export PROXY_IP=${HOST}:${PORT}
+    curl $PROXY_IP
+
+Installing Gateway API: Standard Channel
+
+    kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v0.7.0/standard-install.yaml
+
 
 ## References
 
