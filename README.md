@@ -14,10 +14,21 @@ Chose Kong Kubernetes Ingress Controller (KIC) which supports Gateway API. Insta
     # Helm 3
     helm install kong/kong --generate-name --set ingressController.installCRDs=false -n kong --create-namespace
 
-    HOST=$(kubectl get svc --namespace kong kong-1684110974-kong-proxy -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-    PORT=$(kubectl get svc --namespace kong kong-1684110974-kong-proxy -o jsonpath='{.spec.port[0].port}')
+    HOST=$(kubectl get svc --namespace kong kong-1684617151-kong-proxy -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+    PORT=$(kubectl get svc --namespace kong kong-1684617151-kong-proxy -o jsonpath='{.spec.ports[0].port}')
+    export PROXY_IP=${HOST}:${PORT}
+    curl $PROXY_IP
+
 
 ![screen-shot-overview](screen-shot/install-kic-by-helm.png)
+
+After install MetalLB, run these commands to test:
+
+    HOST=$(kubectl get svc --namespace kong kong-1684593385-kong-proxy -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+    PORT=$(kubectl get svc --namespace kong kong-1684593385-kong-proxy -o jsonpath='{.spec.ports[0].port}')
+    export PROXY_IP=${HOST}:${PORT}
+    curl $PROXY_IP
+
 
 ## 2. Installing MetalLB
 
@@ -43,8 +54,13 @@ After googled around, it was able to install by helm (Please note that it was in
     kubectl apply -f metallb/L2Advertisement.yaml
 
 
+Both service "test-metallb" and kong-proxy got IPs from the specified pool:
+
 ![screen-shot-after-install-metallb](screen-shot/metallb-install-by-helm-and-then-configured.png)
 
+Delete metallb:
+
+    helm delete metallb
 
 ## References
 
