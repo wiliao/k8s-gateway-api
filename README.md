@@ -52,7 +52,7 @@ Chose Kong Kubernetes Ingress Controller (KIC) which supports Gateway API. Insta
     curl $PROXY_IP
 
 
-![screen-shot-overview](screen-shot/install-kic-by-helm.png)
+![screen-shot-install-kic](screen-shot/install-kic-by-helm.png)
 
 After install MetalLB, check where the pod for kong is running, in this case, it was on linux-02, so run the curl command on linux-02 to test:
 
@@ -60,12 +60,38 @@ After install MetalLB, check where the pod for kong is running, in this case, it
     PORT=$(kubectl get svc --namespace kong kong-1684593385-kong-proxy -o jsonpath='{.spec.ports[0].port}')
     export PROXY_IP=${HOST}:${PORT}
 
+If everything is setup correctly, making a request to Kong Gateway should return back a HTTP 404 Not Found status code:
+
     #run on linux-02
     curl $PROXY_IP
 
-The result is {"message":"no Route matched with those values"}
+The result is 
 
-Installing Gateway API: Standard Channel
+![screen-shot-before-install-ingress](screen-shot/before-ingress-resource-setup.png)
+
+This is expected since Kong Gateway doesn’t know how to proxy the request yet.
+
+However, 
+
+    curl -i http://kong.example/echo --resolve kong.example:80:10.0.0.21
+
+got the below result so far:
+
+    HTTP/1.1 504 Gateway Time-out
+    Date: Sun, 21 May 2023 03:14:45 GMT
+    Content-Type: application/json; charset=utf-8
+    Connection: keep-alive
+    Content-Length: 51
+    X-Kong-Upstream-Latency: 60003
+    X-Kong-Proxy-Latency: 300002
+    Via: kong/3.2.2
+
+    {
+    "message":"The upstream server is timing out"
+    }
+
+
+## 3. Installing Gateway API: Standard Channel
 
     kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v0.7.0/standard-install.yaml
 
