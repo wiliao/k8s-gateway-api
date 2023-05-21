@@ -54,12 +54,16 @@ Chose Kong Kubernetes Ingress Controller (KIC) which supports Gateway API. Insta
 
 ![screen-shot-overview](screen-shot/install-kic-by-helm.png)
 
-After install MetalLB, run these commands to test:
+After install MetalLB, check where the pod for kong is running, in this case, it was on linux-02, so run the curl command on linux-02 to test:
 
     HOST=$(kubectl get svc --namespace kong kong-1684593385-kong-proxy -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
     PORT=$(kubectl get svc --namespace kong kong-1684593385-kong-proxy -o jsonpath='{.spec.ports[0].port}')
     export PROXY_IP=${HOST}:${PORT}
+
+    #run on linux-02
     curl $PROXY_IP
+
+The result is {"message":"no Route matched with those values"}
 
 Installing Gateway API: Standard Channel
 
